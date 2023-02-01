@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ListModel } from 'src/lists/entities/list.model';
 import { AppController } from './app.controller';
@@ -8,6 +9,7 @@ import { ListsModule } from './lists/lists.module';
 @Module({
   imports: [
     ListsModule,
+    EventEmitterModule.forRoot(),
     SequelizeModule.forRoot({
       dialect: 'sqlite',
       host: ':memory:',

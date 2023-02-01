@@ -1,23 +1,25 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import EventEmitter from 'events';
 
 import { CreateListDto } from './dto/create-list.dto';
 import { ListGateway } from './gateways/list-gateway-interface';
 import { List } from './entities/list.entity';
+import { ListCreatedEvent } from './events/list-created.event';
 
 @Injectable()
 export class ListsService {
   constructor(
     @Inject('ListPersistenceGateway')
     private listPersistenceGateway: ListGateway,
-    @Inject('ListIntegrationGateway')
-    private listIntegrationGateway: ListGateway,
+
+    @Inject('EventEmitter')
+    private eventEmitter: EventEmitter,
   ) {}
 
-  // The problema here is that integration gateway has a high failure rate
   async create(createListDto: CreateListDto) {
     const listEntity = new List(createListDto);
     await this.listPersistenceGateway.create(listEntity);
-    await this.listIntegrationGateway.create(listEntity);
+    this.eventEmitter.emit('list.created', new ListCreatedEvent(listEntity));
     return listEntity;
   }
 
