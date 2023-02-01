@@ -1,16 +1,18 @@
-import { of } from 'rxjs';
+import { ListCreatedEvent } from './events/list-created.event';
 import { ListGatewayInMemory } from './gateways/list-gateway-in-memory';
 import { ListsService } from './lists.service';
+
+const eventEmitterMock = {
+  emit: jest.fn(),
+};
 
 describe('ListsService', () => {
   let service: ListsService;
   let listPersistenceGateway: ListGatewayInMemory;
-  let listIntegrationGateway: ListGatewayInMemory;
 
   beforeEach(() => {
     listPersistenceGateway = new ListGatewayInMemory();
-    listIntegrationGateway = new ListGatewayInMemory();
-    service = new ListsService(listPersistenceGateway, listIntegrationGateway);
+    service = new ListsService(listPersistenceGateway, eventEmitterMock as any);
   });
 
   it('should create a list', async () => {
@@ -19,17 +21,9 @@ describe('ListsService', () => {
     });
     expect(list.id).toEqual(1);
     expect(list.name).toEqual('My List');
+    expect(eventEmitterMock.emit).toHaveBeenCalledWith(
+      'list.created', 
+      new ListCreatedEvent(list),
+    );
   });
-
-  // beforeEach(async () => {
-  //   const module: TestingModule = await Test.createTestingModule({
-  //     providers: [ListsService],
-  //   }).compile();
-
-  //   service = module.get<ListsService>(ListsService);
-  // });
-
-  // it('should be defined', () => {
-  //   expect(service).toBeDefined();
-  // });
 });
