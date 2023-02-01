@@ -1,0 +1,16 @@
+### List Lists
+GET http://localhost:3000/lists
+
+### Get List
+GET http://localhost:3000/lists/1
+
+### Create List
+POST http://localhost:3000/lists
+Content-Type: application/json
+
+{
+  "name": "My List"
+}
+
+### List CRM Lists
+GET http://localhost:8000/lists
